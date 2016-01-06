@@ -1,0 +1,53 @@
+diff -Nru glassfish-hk2-2.3.0/hk2-api/pom.xml glassfish-hk2-2.3.0.aopalliance/hk2-api/pom.xml
+--- glassfish-hk2-2.3.0/hk2-api/pom.xml	2015-05-06 18:15:04.119159327 +0200
++++ glassfish-hk2-2.3.0.aopalliance/hk2-api/pom.xml	2015-05-06 18:15:08.760930836 +0200
+@@ -98,8 +98,8 @@
+             <artifactId>hk2-utils</artifactId>
+         </dependency>
+         <dependency>
+-            <groupId>org.glassfish.hk2.external</groupId>
+-            <artifactId>aopalliance-repackaged</artifactId>
++            <groupId>aopalliance</groupId>
++            <artifactId>aopalliance</artifactId>
+         </dependency>
+     </dependencies>
+ </project>
+diff -Nru glassfish-hk2-2.3.0/hk2-locator/pom.xml glassfish-hk2-2.3.0.aopalliance/hk2-locator/pom.xml
+--- glassfish-hk2-2.3.0/hk2-locator/pom.xml	2015-05-06 01:03:38.000000000 +0200
++++ glassfish-hk2-2.3.0.aopalliance/hk2-locator/pom.xml	2015-05-06 18:15:40.027391746 +0200
+@@ -98,8 +98,8 @@
+             <artifactId>javax.inject</artifactId>
+         </dependency>
+         <dependency>
+-            <groupId>org.glassfish.hk2.external</groupId>
+-            <artifactId>aopalliance-repackaged</artifactId>
++            <groupId>aopalliance</groupId>
++            <artifactId>aopalliance</artifactId>
+         </dependency>
+         <dependency>
+             <groupId>org.glassfish.hk2</groupId>
+diff -Nru glassfish-hk2-2.3.0/hk2-testing/hk2-locator-no-proxies/pom.xml glassfish-hk2-2.3.0.aopalliance/hk2-testing/hk2-locator-no-proxies/pom.xml
+--- glassfish-hk2-2.3.0/hk2-testing/hk2-locator-no-proxies/pom.xml	2015-05-06 01:03:38.000000000 +0200
++++ glassfish-hk2-2.3.0.aopalliance/hk2-testing/hk2-locator-no-proxies/pom.xml	2015-05-06 18:16:19.304458334 +0200
+@@ -85,8 +85,8 @@
+                 <artifactId>javassist</artifactId>
+               </exclusion>
+               <exclusion>
+-                <groupId>org.glassfish.hk2.external</groupId>
+-                <artifactId>aopalliance-repackaged</artifactId>
++                <groupId>aopalliance</groupId>
++                <artifactId>aopalliance</artifactId>
+               </exclusion>
+             </exclusions>
+         </dependency>
+@@ -95,8 +95,8 @@
+             <artifactId>hk2-api</artifactId>
+             <exclusions>
+               <exclusion>
+-                <groupId>org.glassfish.hk2.external</groupId>
+-                <artifactId>aopalliance-repackaged</artifactId>
++                <groupId>aopalliance</groupId>
++                <artifactId>aopalliance</artifactId>
+               </exclusion>
+             </exclusions>
+         </dependency>

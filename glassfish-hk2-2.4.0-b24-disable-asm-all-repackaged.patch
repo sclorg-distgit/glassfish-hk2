@@ -1,0 +1,388 @@
+diff -Nru glassfish-hk2-2.4.0-b24/class-model/pom.xml glassfish-hk2-2.4.0-b24.external-asm/class-model/pom.xml
+--- glassfish-hk2-2.4.0-b24/class-model/pom.xml	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/class-model/pom.xml	2015-05-25 10:53:29.141082562 +0200
+@@ -84,8 +84,8 @@
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>org.glassfish.hk2.external</groupId>
+-            <artifactId>asm-all-repackaged</artifactId>
++            <groupId>org.ow2.asm</groupId>
++            <artifactId>asm-all</artifactId>
+         </dependency>
+         <dependency>
+            <groupId>javax.enterprise</groupId>
+diff -Nru glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/AnnotationModelImpl.java glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/AnnotationModelImpl.java
+--- glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/AnnotationModelImpl.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/AnnotationModelImpl.java	2015-05-25 10:50:23.757004839 +0200
+@@ -90,8 +90,8 @@
+     }
+     
+     private Object unwrap(Object value) {
+-      if (org.glassfish.hk2.external.org.objectweb.asm.Type.class.isInstance(value)) {
+-        return org.glassfish.hk2.external.org.objectweb.asm.Type.class.cast(value).getClassName();
++      if (org.objectweb.asm.Type.class.isInstance(value)) {
++        return org.objectweb.asm.Type.class.cast(value).getClassName();
+       }
+       return value;
+     }
+diff -Nru glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/AnnotationTypeImpl.java glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/AnnotationTypeImpl.java
+--- glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/AnnotationTypeImpl.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/AnnotationTypeImpl.java	2015-05-25 10:50:24.025990443 +0200
+@@ -61,8 +61,8 @@
+     }
+ 
+     public void addDefaultValue(String name, Object value) {
+-      if (org.glassfish.hk2.external.org.objectweb.asm.Type.class.isInstance(value)) {
+-        defValues.put(name, org.glassfish.hk2.external.org.objectweb.asm.Type.class.cast(value).getClassName());
++      if (org.objectweb.asm.Type.class.isInstance(value)) {
++        defValues.put(name, org.objectweb.asm.Type.class.cast(value).getClassName());
+       } else {
+         defValues.put(name, value);
+       }
+diff -Nru glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/MethodModelImpl.java glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/MethodModelImpl.java
+--- glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/MethodModelImpl.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/MethodModelImpl.java	2015-05-25 10:50:24.026990389 +0200
+@@ -76,12 +76,12 @@
+ 
+     @Override
+     public String getReturnType() {
+-        return org.glassfish.hk2.external.org.objectweb.asm.Type.getReturnType(signature).getClassName(); 
++        return org.objectweb.asm.Type.getReturnType(signature).getClassName(); 
+     }
+ 
+     @Override
+     public String[] getArgumentTypes() {
+-        org.glassfish.hk2.external.org.objectweb.asm.Type[] types = org.glassfish.hk2.external.org.objectweb.asm.Type.getArgumentTypes(signature);
++        org.objectweb.asm.Type[] types = org.objectweb.asm.Type.getArgumentTypes(signature);
+         String[] stringTypes = new String[types.length];
+         for (int i=0;i<types.length;i++) {
+             stringTypes[i] = types[i].getClassName();
+diff -Nru glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/ModelBuilder.java glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/ModelBuilder.java
+--- glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/ModelBuilder.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/ModelBuilder.java	2015-05-25 10:50:23.302029191 +0200
+@@ -40,7 +40,7 @@
+ package org.glassfish.hk2.classmodel.reflect.impl;
+ 
+ import org.glassfish.hk2.classmodel.reflect.*;
+-import org.glassfish.hk2.external.org.objectweb.asm.Opcodes;
++import org.objectweb.asm.Opcodes;
+ import java.net.URI;
+ import java.util.Collection;
+ 
+diff -Nru glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/ModelClassVisitor.java glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/ModelClassVisitor.java
+--- glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/ModelClassVisitor.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/ModelClassVisitor.java	2015-05-25 10:50:23.305029030 +0200
+@@ -41,8 +41,8 @@
+ 
+ import org.glassfish.hk2.classmodel.reflect.*;
+ import org.glassfish.hk2.classmodel.reflect.Type;
+-import org.glassfish.hk2.external.org.objectweb.asm.*;
+-import org.glassfish.hk2.external.org.objectweb.asm.signature.SignatureReader;
++import org.objectweb.asm.*;
++import org.objectweb.asm.signature.SignatureReader;
+ 
+ import java.net.URI;
+ import java.net.URISyntaxException;
+@@ -94,7 +94,7 @@
+ 
+     @Override
+     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+-        String parentName = (superName!=null?org.glassfish.hk2.external.org.objectweb.asm.Type.getObjectType(superName).getClassName():null);
++        String parentName = (superName!=null?org.objectweb.asm.Type.getObjectType(superName).getClassName():null);
+         TypeProxy parent = null;
+         Class<? extends Type> typeType = typeBuilder.getType(access);
+         if (!typeType.equals(AnnotationType.class)) {
+@@ -105,7 +105,7 @@
+             TypeImpl parentType = typeBuilder.getType(access, parentName, null);
+             parent.set(parentType);
+         }
+-        String className = org.glassfish.hk2.external.org.objectweb.asm.Type.getObjectType(name).getClassName();
++        String className = org.objectweb.asm.Type.getObjectType(name).getClassName();
+         URI classDefURI=null;
+         try {
+             int index = entryName.length() - name.length() - 6;
+@@ -162,7 +162,7 @@
+             } else {
+                 if (!typeType.equals(AnnotationType.class)) {
+                     for (String intf : interfaces) {
+-                        String interfaceName = org.glassfish.hk2.external.org.objectweb.asm.Type.getObjectType(intf).getClassName();
++                        String interfaceName = org.objectweb.asm.Type.getObjectType(intf).getClassName();
+                         TypeImpl interfaceModel = typeBuilder.getType(Opcodes.ACC_INTERFACE, interfaceName, null);
+                         TypeProxy<InterfaceModel> typeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
+                         if (typeProxy.get() == null) {
+@@ -241,7 +241,7 @@
+         }
+         cm = (ExtensibleTypeImpl) type;
+ 
+-        org.glassfish.hk2.external.org.objectweb.asm.Type asmType = org.glassfish.hk2.external.org.objectweb.asm.Type.getType(desc);
++        org.objectweb.asm.Type asmType = org.objectweb.asm.Type.getType(desc);
+ 
+         TypeProxy<?> fieldType =  typeBuilder.getHolder(asmType.getClassName());
+         if (fieldType==null) return null;
+@@ -280,7 +280,7 @@
+     }                                                            
+ 
+     private String unwrap(String desc) {
+-        return org.glassfish.hk2.external.org.objectweb.asm.Type.getType(desc).getClassName();
++        return org.objectweb.asm.Type.getType(desc).getClassName();
+     }
+ 
+     private static class ClassVisitingContext {
+diff -Nru glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/SignatureVisitorImpl.java glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/SignatureVisitorImpl.java
+--- glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/SignatureVisitorImpl.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/SignatureVisitorImpl.java	2015-05-25 10:50:23.710007355 +0200
+@@ -40,8 +40,8 @@
+ package org.glassfish.hk2.classmodel.reflect.impl;
+ 
+ import org.glassfish.hk2.classmodel.reflect.InterfaceModel;
+-import org.glassfish.hk2.external.org.objectweb.asm.Opcodes;
+-import org.glassfish.hk2.external.org.objectweb.asm.signature.SignatureVisitor;
++import org.objectweb.asm.Opcodes;
++import org.objectweb.asm.signature.SignatureVisitor;
+ 
+ import java.util.*;
+ 
+@@ -136,7 +136,7 @@
+ 
+     @Override
+     public void visitClassType(String s) {
+-        String interfaceName = org.glassfish.hk2.external.org.objectweb.asm.Type.getObjectType(s).getClassName();
++        String interfaceName = org.objectweb.asm.Type.getObjectType(s).getClassName();
+         TypeProxy<InterfaceModel> interfaceTypeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
+         if (interfaceTypeProxy!=null) {
+             ParameterizedInterfaceModelImpl childParameterized = new ParameterizedInterfaceModelImpl(interfaceTypeProxy);
+diff -Nru glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/TypesImpl.java glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/TypesImpl.java
+--- glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/TypesImpl.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/impl/TypesImpl.java	2015-05-25 10:50:23.753005053 +0200
+@@ -41,7 +41,7 @@
+ 
+ import org.glassfish.hk2.classmodel.reflect.*;
+ import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
+-import org.glassfish.hk2.external.org.objectweb.asm.Opcodes;
++import org.objectweb.asm.Opcodes;
+ 
+ import java.net.URI;
+ 
+diff -Nru glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/Parser.java glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/Parser.java
+--- glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/Parser.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/Parser.java	2015-05-25 10:50:23.301029244 +0200
+@@ -44,7 +44,7 @@
+ import org.glassfish.hk2.classmodel.reflect.util.DirectoryArchive;
+ import org.glassfish.hk2.classmodel.reflect.util.JarArchive;
+ import org.glassfish.hk2.classmodel.reflect.util.ResourceLocator;
+-import org.glassfish.hk2.external.org.objectweb.asm.ClassReader;
++import org.objectweb.asm.ClassReader;
+ 
+ import java.io.Closeable;
+ import java.io.File;
+diff -Nru glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/ParsingContext.java glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/ParsingContext.java
+--- glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/ParsingContext.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/ParsingContext.java	2015-05-25 10:50:23.302029191 +0200
+@@ -46,7 +46,7 @@
+ import org.glassfish.hk2.classmodel.reflect.util.CommonModelRegistry;
+ import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
+ import org.glassfish.hk2.classmodel.reflect.util.ResourceLocator;
+-import org.glassfish.hk2.external.org.objectweb.asm.ClassVisitor;
++import org.objectweb.asm.ClassVisitor;
+ 
+ import java.util.Collections;
+ import java.util.HashMap;
+diff -Nru glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/util/CommonModelRegistry.java glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/util/CommonModelRegistry.java
+--- glassfish-hk2-2.4.0-b24/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/util/CommonModelRegistry.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/class-model/src/main/java/org/glassfish/hk2/classmodel/reflect/util/CommonModelRegistry.java	2015-05-25 10:50:23.754005000 +0200
+@@ -40,7 +40,7 @@
+ package org.glassfish.hk2.classmodel.reflect.util;
+ 
+ import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+-import org.glassfish.hk2.external.org.objectweb.asm.ClassReader;
++import org.objectweb.asm.ClassReader;
+ import org.osgi.framework.Bundle;
+ import org.osgi.framework.BundleContext;
+ import org.osgi.service.packageadmin.ExportedPackage;
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/pom.xml glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/pom.xml
+--- glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/pom.xml	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/pom.xml	2015-05-25 10:54:21.368287215 +0200
+@@ -77,8 +77,8 @@
+             <artifactId>javax.inject</artifactId>
+         </dependency>
+         <dependency>
+-            <groupId>org.glassfish.hk2.external</groupId>
+-            <artifactId>asm-all-repackaged</artifactId>
++            <groupId>org.ow2.asm</groupId>
++            <artifactId>asm-all</artifactId>
+         </dependency>
+         <dependency>
+             <groupId>org.glassfish.hk2</groupId>
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractAnnotationVisitorImpl.java glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractAnnotationVisitorImpl.java
+--- glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractAnnotationVisitorImpl.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractAnnotationVisitorImpl.java	2015-05-25 10:50:23.286030047 +0200
+@@ -39,8 +39,8 @@
+  */
+ package org.jvnet.hk2.generator.internal;
+ 
+-import org.glassfish.hk2.external.org.objectweb.asm.AnnotationVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.Opcodes;
++import org.objectweb.asm.AnnotationVisitor;
++import org.objectweb.asm.Opcodes;
+ 
+ /**
+  * This just makes the main-line code less messy
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractClassVisitorImpl.java glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractClassVisitorImpl.java
+--- glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractClassVisitorImpl.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractClassVisitorImpl.java	2015-05-25 10:50:23.287029994 +0200
+@@ -39,12 +39,12 @@
+  */
+ package org.jvnet.hk2.generator.internal;
+ 
+-import org.glassfish.hk2.external.org.objectweb.asm.AnnotationVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.Attribute;
+-import org.glassfish.hk2.external.org.objectweb.asm.ClassVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.FieldVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.MethodVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.Opcodes;
++import org.objectweb.asm.AnnotationVisitor;
++import org.objectweb.asm.Attribute;
++import org.objectweb.asm.ClassVisitor;
++import org.objectweb.asm.FieldVisitor;
++import org.objectweb.asm.MethodVisitor;
++import org.objectweb.asm.Opcodes;
+ 
+ /**
+  * @author jwells
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractMethodVisitorImpl.java glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractMethodVisitorImpl.java
+--- glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractMethodVisitorImpl.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/AbstractMethodVisitorImpl.java	2015-05-25 10:50:23.288029940 +0200
+@@ -39,11 +39,11 @@
+  */
+ package org.jvnet.hk2.generator.internal;
+ 
+-import org.glassfish.hk2.external.org.objectweb.asm.AnnotationVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.Attribute;
+-import org.glassfish.hk2.external.org.objectweb.asm.Label;
+-import org.glassfish.hk2.external.org.objectweb.asm.MethodVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.Opcodes;
++import org.objectweb.asm.AnnotationVisitor;
++import org.objectweb.asm.Attribute;
++import org.objectweb.asm.Label;
++import org.objectweb.asm.MethodVisitor;
++import org.objectweb.asm.Opcodes;
+ 
+ /**
+  * This in only here to keep the main-line code less messy
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/ClassVisitorImpl.java glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/ClassVisitorImpl.java
+--- glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/ClassVisitorImpl.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/ClassVisitorImpl.java	2015-05-25 10:50:23.286030047 +0200
+@@ -57,9 +57,9 @@
+ import org.glassfish.hk2.api.Factory;
+ import org.glassfish.hk2.utilities.DescriptorImpl;
+ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+-import org.glassfish.hk2.external.org.objectweb.asm.AnnotationVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.MethodVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.Type;
++import org.objectweb.asm.AnnotationVisitor;
++import org.objectweb.asm.MethodVisitor;
++import org.objectweb.asm.Type;
+ 
+ /**
+  * @author jwells
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/Utilities.java glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/Utilities.java
+--- glassfish-hk2-2.4.0-b24/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/Utilities.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-inhabitant-generator/src/main/java/org/jvnet/hk2/generator/internal/Utilities.java	2015-05-25 10:50:23.294029619 +0200
+@@ -77,9 +77,9 @@
+ import org.glassfish.hk2.api.Rank;
+ import org.jvnet.hk2.annotations.Contract;
+ import org.jvnet.hk2.annotations.ContractsProvided;
+-import org.glassfish.hk2.external.org.objectweb.asm.AnnotationVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.ClassReader;
+-import org.glassfish.hk2.external.org.objectweb.asm.MethodVisitor;
++import org.objectweb.asm.AnnotationVisitor;
++import org.objectweb.asm.ClassReader;
++import org.objectweb.asm.MethodVisitor;
+ import org.glassfish.hk2.utilities.DescriptorImpl;
+ 
+ /**
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-testing/hk2-junitrunner/pom.xml glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-junitrunner/pom.xml
+--- glassfish-hk2-2.4.0-b24/hk2-testing/hk2-junitrunner/pom.xml	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-junitrunner/pom.xml	2015-05-25 10:54:53.039592077 +0200
+@@ -94,8 +94,8 @@
+             <scope>provided</scope>
+         </dependency>
+         <dependency>
+-            <groupId>org.glassfish.hk2.external</groupId>
+-            <artifactId>asm-all-repackaged</artifactId>
++            <groupId>org.ow2.asm</groupId>
++            <artifactId>asm-all</artifactId>
+         </dependency>
+     </dependencies>
+ </project>
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-testing/hk2-junitrunner/src/main/java/org/jvnet/hk2/testing/junit/HK2Runner.java glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-junitrunner/src/main/java/org/jvnet/hk2/testing/junit/HK2Runner.java
+--- glassfish-hk2-2.4.0-b24/hk2-testing/hk2-junitrunner/src/main/java/org/jvnet/hk2/testing/junit/HK2Runner.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-junitrunner/src/main/java/org/jvnet/hk2/testing/junit/HK2Runner.java	2015-05-25 10:50:23.297029459 +0200
+@@ -74,7 +74,7 @@
+ import org.jvnet.hk2.testing.junit.internal.ClassVisitorImpl;
+ import org.jvnet.hk2.testing.junit.internal.ErrorServiceImpl;
+ import org.jvnet.hk2.testing.junit.internal.JustInTimeInjectionResolverImpl;
+-import org.glassfish.hk2.external.org.objectweb.asm.ClassReader;
++import org.objectweb.asm.ClassReader;
+ 
+ /**
+  * This class should be extended by test classes in order to get an automatically
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-testing/hk2-junitrunner/src/main/java/org/jvnet/hk2/testing/junit/internal/ClassVisitorImpl.java glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-junitrunner/src/main/java/org/jvnet/hk2/testing/junit/internal/ClassVisitorImpl.java
+--- glassfish-hk2-2.4.0-b24/hk2-testing/hk2-junitrunner/src/main/java/org/jvnet/hk2/testing/junit/internal/ClassVisitorImpl.java	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-junitrunner/src/main/java/org/jvnet/hk2/testing/junit/internal/ClassVisitorImpl.java	2015-05-25 10:50:23.298029405 +0200
+@@ -45,9 +45,9 @@
+ import org.glassfish.hk2.api.ActiveDescriptor;
+ import org.glassfish.hk2.api.ServiceLocator;
+ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+-import org.glassfish.hk2.external.org.objectweb.asm.AnnotationVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.ClassVisitor;
+-import org.glassfish.hk2.external.org.objectweb.asm.Opcodes;
++import org.objectweb.asm.AnnotationVisitor;
++import org.objectweb.asm.ClassVisitor;
++import org.objectweb.asm.Opcodes;
+ 
+ /**
+  * @author jwells
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-testing/hk2-locator-extras/pom.xml glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-locator-extras/pom.xml
+--- glassfish-hk2-2.4.0-b24/hk2-testing/hk2-locator-extras/pom.xml	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-locator-extras/pom.xml	2015-05-25 10:55:13.558493848 +0200
+@@ -89,8 +89,8 @@
+             <artifactId>javax.inject</artifactId>
+         </dependency>
+         <dependency>
+-            <groupId>org.glassfish.hk2.external</groupId>
+-            <artifactId>asm-all-repackaged</artifactId>
++            <groupId>org.ow2.asm</groupId>
++            <artifactId>asm-all</artifactId>
+         </dependency>
+     </dependencies>
+ </project>
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-testing/hk2-mockito/pom.xml glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-mockito/pom.xml
+--- glassfish-hk2-2.4.0-b24/hk2-testing/hk2-mockito/pom.xml	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-mockito/pom.xml	2015-05-25 10:55:39.350113408 +0200
+@@ -110,8 +110,8 @@
+             <scope>provided</scope>
+         </dependency>
+         <dependency>
+-            <groupId>org.glassfish.hk2.external</groupId>
+-            <artifactId>asm-all-repackaged</artifactId>
++            <groupId>org.ow2.asm</groupId>
++            <artifactId>asm-all</artifactId>
+         </dependency>
+         <dependency>
+             <groupId>org.mockito</groupId>
+diff -Nru glassfish-hk2-2.4.0-b24/hk2-testing/hk2-testng/pom.xml glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-testng/pom.xml
+--- glassfish-hk2-2.4.0-b24/hk2-testing/hk2-testng/pom.xml	2015-05-23 16:58:32.000000000 +0200
++++ glassfish-hk2-2.4.0-b24.external-asm/hk2-testing/hk2-testng/pom.xml	2015-05-25 10:56:07.115627319 +0200
+@@ -108,8 +108,8 @@
+             <scope>provided</scope>
+         </dependency>
+         <dependency>
+-            <groupId>org.glassfish.hk2.external</groupId>
+-            <artifactId>asm-all-repackaged</artifactId>
++            <groupId>org.ow2.asm</groupId>
++            <artifactId>asm-all</artifactId>
+         </dependency>
+ 	<dependency>
+             <groupId>org.uncommons</groupId>

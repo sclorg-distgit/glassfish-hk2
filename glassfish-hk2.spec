@@ -6,7 +6,7 @@
 %{?java_common_find_provides_and_requires}
 Name:          %{?scl_prefix}glassfish-hk2
 Version:       2.4.0
-Release:       0.7.3.b25%{?dist}
+Release:       0.7.5.b25%{?dist}
 Summary:       Hundred Kilobytes Kernel
 License:       CDDL or GPLv2 with exceptions
 URL:           http://hk2.java.net/
@@ -21,8 +21,9 @@ Patch0:        glassfish-hk2-2.3.0-hk2-utils-osgi_bundle.patch
 Patch1:        glassfish-hk2-2.4.0-b24-disable-asm-all-repackaged.patch
 Patch2:        glassfish-hk2-2.3.0-disable-external-aopalliance.patch
 
+BuildRequires: java-1.8.0-openjdk-devel
 BuildRequires: %{?scl_prefix_java_common}maven-local
-BuildRequires: %{?scl_prefix}mvn(aopalliance:aopalliance)
+BuildRequires: %{?scl_prefix_java_common}mvn(aopalliance:aopalliance)
 BuildRequires: %{?scl_prefix_java_common}mvn(javax.inject:javax.inject)
 BuildRequires: %{?scl_prefix_maven}mvn(net.java:jvnet-parent:pom:)
 BuildRequires: %{?scl_prefix_maven}mvn(org.apache.felix:maven-bundle-plugin)
@@ -30,7 +31,7 @@ BuildRequires: %{?scl_prefix_maven}mvn(org.apache.maven:maven-plugin-api)
 BuildRequires: %{?scl_prefix_maven}mvn(org.apache.maven.plugins:maven-compiler-plugin)
 BuildRequires: %{?scl_prefix_maven}mvn(org.apache.maven.shared:maven-osgi)
 BuildRequires: %{?scl_prefix}mvn(org.glassfish.hk2:osgi-resource-locator)
-BuildRequires: %{?scl_prefix}mvn(org.javassist:javassist)
+BuildRequires: %{?scl_prefix_java_common}mvn(org.javassist:javassist)
 BuildRequires: %{?scl_prefix}mvn(org.jvnet:tiger-types)
 
 BuildArch:     noarch
@@ -128,6 +129,10 @@ find . -name '*.class' -print -delete
 %pom_remove_dep "org.easymock:easymock"
 %pom_xpath_set "pom:dependency[pom:artifactId = 'javax.inject']/pom:groupId" javax.inject hk2-locator
 
+# Disable strict doclinting
+%pom_xpath_inject "pom:pluginManagement/pom:plugins/pom:plugin[pom:artifactId = 'maven-javadoc-plugin']" \
+  "<configuration><additionalparam>-Xdoclint:none</additionalparam></configuration>"
+
 cp -p %{SOURCE1} LICENSE.txt
 sed -i 's/\r//' LICENSE.txt
 
@@ -143,7 +148,7 @@ sed -i 's/\r//' LICENSE.txt
 %build
 
 %{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
-
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0
 %mvn_build -- -Dmaven.test.skip=true
 
 %{?scl:EOF}
@@ -174,6 +179,12 @@ sed -i 's/\r//' LICENSE.txt
 %doc LICENSE.txt
 
 %changelog
+* Fri Mar 18 2016 Mat Booth <mat.booth@redhat.com> - 2.4.0-0.7.5.b25
+- Disable strict doclinting when java 8 is in use, fixes rhbz#1313883
+
+* Fri Feb 05 2016 Mat Booth <mat.booth@redhat.com> - 2.4.0-0.7.4.b25
+- Use deps from rh-java-common collection where available
+
 * Tue Jul 28 2015 Alexander Kurtakov <akurtako@redhat.com> 2.4.0-0.7.3.b25
 - Drop obsolete outside of DTS namespace.
 
